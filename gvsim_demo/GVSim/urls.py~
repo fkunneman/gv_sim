@@ -1,0 +1,10 @@
+
+from django.urls import path
+
+from . import views
+
+urlpatterns = [
+    url(r'^$', PrikbordHome.as_view(), name='prikbordhome'),
+    path('', views.index, name='index'),
+    path('', views.search, name='search'),
+]
