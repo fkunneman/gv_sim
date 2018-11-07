@@ -17,26 +17,24 @@ class GVHome(View):
     def get(self, request):
 
         self.datareader = datareader.Datareader()
-        self.example_questions, self.example_answers = self.datareader.return_example_questions_answers()
+        self.example_questions = self.datareader.return_example_questions()
         
         return render(
             request,
             'gv_sim/index.html', {
-                'example_questions':self.example_questions,
-                'example_answers':self.example_answers
+                'example_questions':self.example_questions
             }
         )
 
     def post(self, request):
 
         self.datareader = datareader.Datareader()
-        self.example_questions, self.example_answers = self.datareader.return_example_questions_answers()
-
+        self.example_questions = self.datareader.return_example_questions()
+        
         return render(
             request,
             'gv_sim/index.html', {
-                'example_questions':self.example_questions,
-                'example_answers':self.example_answers
+                'example_questions':self.example_questions
             }
         )
 

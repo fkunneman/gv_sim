@@ -1,7 +1,8 @@
 
 from django.shortcuts import render
+from django.views.generic import View
 
-import datareader
+from . import datareader
 
 import sys
 
