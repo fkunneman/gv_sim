@@ -33,7 +33,7 @@ class GVHome(View):
 
         self.datareader = datareader.Datareader(27020,'GoeieVraag','cqa','examples','answers','qa_dict')
 
-        self.bm25_path = '/Users/fkunneman/Google Drive/RU/DiscoSumo/Goeievraag/demo_data/bm25.pkl'
+        self.bm25_path = '/roaming/fkunnema/goeievraag/exp_similarity_new/bm25.pkl'
         
         if 'Question' in request.POST:
             query = request.POST['Question']
