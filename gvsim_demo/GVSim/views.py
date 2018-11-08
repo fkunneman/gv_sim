@@ -17,59 +17,36 @@ class GVHome(View):
 
     def get(self, request):
 
-        self.datareader = datareader.Datareader()
-        self.example_questions = self.datareader.return_example_questions()
-        
+        self.datareader = datareader.Datareader(27020,'GoeieVraag','cqa','examples','answers','qa_dict')
+
         return render(
             request,
-            'gv_sim/index.html', {
-                'example_questions':self.example_questions
+            'index.html', {
+                'stage':'start',
+                'retrieved':[],
+                'example_questions':self.datareader.examples,
+                'placeholder':'Welke vraag heb je altijd al willen stellen?'
             }
         )
 
     def post(self, request):
 
-        self.datareader = datareader.Datareader()
-        self.example_questions = self.datareader.return_example_questions()
+        self.datareader = datareader.Datareader(27020,'GoeieVraag','cqa','examples','answers','qa_dict')
+
+        self.bm25_path = '/Users/fkunneman/Google Drive/RU/DiscoSumo/Goeievraag/demo_data/bm25.pkl'
         
-        return render(
-            request,
-            'gv_sim/index.html', {
-                'example_questions':self.example_questions
-            }
-        )
-
-    
-class GVReturn(View):
-
-    def get(self, request):
+        if 'Question' in request.POST:
+            query = request.POST['Question']
+            self.retrieved = self.datareader.rank_sims_bm25(self.bm25_path, self.query, 0.2)
+        else:
+            self.retrieved = []
 
         return render(
             request,
-            'gv_sim/search.html', {
-                'query':'',
-                'returned_questions':[],
-                'returned_answers':[]
+            'index.html', {
+                'stage':'search',
+                'retrieved':self.retrieved,
+                'example_questions':self.datareader.examples,
+                'placeholder': query
             }
         )
-
-
-    def post(self, request):
-
-        self.datareader = datareader.Datareader()
-        self.returned_questions, self.returned_answers = datareader.rank_sims_bm25(request.POST['query'],similarity_threshold = 0.5) # similarity threshold value is used to classify question as similar / non-similar
-        # self.returned_questions, self.returned_answers = datareader.rank_sims_soft_cosine(request.POST['query'],similarity_threshold = 0.5) # similarity threshold value is used to classify question as similar / non-similar
-
-        return render(
-            request,
-            'gv_sim/search.html', {
-                'query':request.POST['query'],
-                'returned_questions':self.returned_questions,
-                'returned_answers':self.returned_answers
-            }
-        )
-    
-
-        
-
-        

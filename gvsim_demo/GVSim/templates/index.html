@@ -1,3 +1,134 @@
 
+<!DOCTYPE html>
+<html>
 
-hello world!
+<head>
+    <style type="text/css">
+      .container {
+        height: 1500px;
+        position: relative;
+        border: 3px solid blue;
+      }
+
+      .center {
+        margin: 0;
+        position: absolute;
+        top: 35%;
+        left: 50%;
+        -ms-transform:  translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+      }
+
+      .btn-link{
+        border:none;
+        outline:none;
+        background:none;
+        cursor:pointer;
+        color:#0000EE;
+        padding:0;
+        text-decoration:underline;
+        font-family:inherit;
+        font-size:inherit;
+      }
+
+      .collapsible {
+        background-color: #ffffff;
+        color: black;
+        cursor: pointer;
+        padding: 14px;
+        width: 100%;
+        border: none;
+        text-align: left;
+        outline: none;
+        font-size: 12px;
+      }
+
+      .active, .collapsible:hover {
+        background-color: #555;
+      }
+
+      .content {
+        padding: 0 14px;
+        display: none;
+        overflow: hidden;
+        background-color: #f1f1f1;
+      }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="center">
+
+<font color="light grey">
+<form method="post">
+{% csrf_token %}
+<input type="text" style="font-size: 14pt; text-align:center; font-color:grey; height : 32px;" name="Question" size="50" value="{{placeholder}}" onclick="this.value=''"><input style="font-size: 20pt" type="submit" value="Stel je vraag">
+</form>
+</font>
+
+<br>
+
+
+{% if stage == "search" %}
+  {% if retrieved %}
+    <center><b>De computer denkt dat deze vraag eerder gesteld is: </b></center><br>
+    {% for q in retrieved %}
+        <button class="collapsible"><center>{{q.question}}</center></button>
+        <div class="content" style="overflow-y: scroll; height:75px;">
+	{% for a in q.answers %}
+	  <p>{{a}}</p><hr>
+	{% endfor %}
+        </div>
+    {% endfor %}
+  {% else %}
+  <center>
+  <b> Deze vraag is volgens de computer niet eerder gesteld. </b><br>
+  </center>
+  {% endif %}  
+{% endif %}
+
+<br>
+<center>
+<p>
+Voorbeeldvragen:
+
+{% for q in example_questions %}
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" name="Question" value="{{q}}" class="btn-link">{{q}}</button>
+  </form>
+{% endfor %} 
+
+</p>
+</center>
+
+</div>
+
+</div>
+
+<script>
+var coll = document.getElementsByClassName("collapsible");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+  coll[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+  });
+}
+
+</script>
+
+
+</body>
+</html>
+
