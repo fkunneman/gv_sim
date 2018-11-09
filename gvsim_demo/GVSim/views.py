@@ -17,7 +17,7 @@ class GVHome(View):
 
     def get(self, request):
 
-        self.datareader = datareader.Datareader(27020,'GoeieVraag','cqa','examples','answers','qa_dict')
+        self.datareader = datareader.Datareader(27017,'GoeieVraag','cqa','examples','answers','qa_dict')
 
         return render(
             request,
@@ -31,7 +31,7 @@ class GVHome(View):
 
     def post(self, request):
 
-        self.datareader = datareader.Datareader(27020,'GoeieVraag','cqa','examples','answers','qa_dict')
+        self.datareader = datareader.Datareader(27017,'GoeieVraag','cqa','examples','answers','qa_dict')
 
         self.bm25_path = '/roaming/fkunnema/goeievraag/exp_similarity_new/bm25.pkl'
         
