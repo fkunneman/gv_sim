@@ -1,0 +1,15 @@
+#$Id: goeievraaghub.service 80011 2016-05-26 12:36:30Z lbiemans $#
+#$URL: https://svn.uvt.nl/its-unix/group/goeievraaghub/etc/systemd/system/goeievraaghub.service $
+[Unit]
+Description=goeievraag
+
+[Service]
+WorkingDirectory=/var/lib/goeievraag/gv_sim/gvsim_demo
+ExecStart=/usr/bin/python3 manage.py runserver
+User=goeievraag
+Group=goeievraag
+KillMode=mixed
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target
