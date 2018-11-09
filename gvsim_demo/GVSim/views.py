@@ -37,7 +37,7 @@ class GVHome(View):
         
         if 'Question' in request.POST:
             query = request.POST['Question']
-            self.retrieved = self.datareader.rank_sims_bm25(self.bm25_path, self.query, 0.2)
+            self.retrieved = self.datareader.rank_sims_bm25(self.bm25_path, query, 0.2)
         else:
             self.retrieved = []
 
