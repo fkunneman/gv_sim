@@ -1,0 +1,13 @@
+[Unit]
+Description=goeievraag
+
+[Service]
+WorkingDirectory=/var/lib/goeievraag/gv_sim/gvsim_demo
+ExecStart=/usr/bin/python3 manage.py runserver
+User=goeievraag
+Group=goeievraag
+KillMode=mixed
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target
