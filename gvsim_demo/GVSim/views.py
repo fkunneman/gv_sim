@@ -6,47 +6,45 @@ from . import datareader
 
 import sys
 
-
-
 # Create your views here.
-
-
-
 
 class GVHome(View):
 
+    print('SET DATA AND MODELS')
+    # for local testing
+    # datareader = datareader.Datareader(27020,'GoeieVraag','cqa','answers','qa_dict')
+    # datareader.init_bm25('/roaming/fkunnema/goeievraag/exp_similarity_new/bm25.pkl')
+    # datareader.init_word2vec('/home/tcastrof/Question/DiscoSumo/goeievraag/word2vec/word2vec.model')
+    # datareader.init_soft_cosine('/roaming/fkunnema/goeievraag/parsed/dict.model','/roaming/fkunnema/goeievraag/parsed/tfidf.model')
+    # for server
+    datareader = datareader.Datareader(27017,'GoeieVraag','cqa','answers','qa_dict')
+    datareader.init_bm25('../bm25.pkl')
+    datareader.init_word2vec('../word2vec.model')
+    datareader.init_soft_cosine('../dict.model','../tfidf.model')
+    print('DONE.')
+    
     def get(self, request):
-
-        self.datareader = datareader.Datareader(27020,'GoeieVraag','cqa','examples','answers','qa_dict')
 
         return render(
             request,
-            'index.html', {
-                'stage':'start',
+            'template.html', {
                 'retrieved':[],
-                'example_questions':self.datareader.examples,
                 'placeholder':'Welke vraag heb je altijd al willen stellen?'
             }
         )
 
     def post(self, request):
 
-        self.datareader = datareader.Datareader(27020,'GoeieVraag','cqa','examples','answers','qa_dict')
-
-        self.bm25_path = '/roaming/fkunnema/goeievraag/exp_similarity_new/bm25.pkl'
-        
         if 'Question' in request.POST:
             query = request.POST['Question']
-            self.retrieved = self.datareader.rank_sims_bm25(self.bm25_path, query, 0.2)
+            self.retrieved = self.datareader.run(query)
         else:
             self.retrieved = []
 
         return render(
             request,
-            'index.html', {
-                'stage':'search',
+            'answer.html', {
                 'retrieved':self.retrieved,
-                'example_questions':self.datareader.examples,
                 'placeholder': query
             }
         )
