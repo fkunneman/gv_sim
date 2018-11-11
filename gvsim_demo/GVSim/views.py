@@ -18,9 +18,9 @@ class GVHome(View):
     # datareader.init_soft_cosine('/roaming/fkunnema/goeievraag/parsed/dict.model','/roaming/fkunnema/goeievraag/parsed/tfidf.model')
     # for server
     datareader = datareader.Datareader(27017,'GoeieVraag','cqa','answers','qa_dict')
-    datareader.init_bm25('../../bm25.pkl')
-    datareader.init_word2vec('../../word2vec.model')
-    datareader.init_soft_cosine('../../dict.model','../../tfidf.model')
+    datareader.init_bm25('/var/lib/goeievraag/bm25.pkl')
+    datareader.init_word2vec('/var/lib/goeievraag/word2vec.model')
+    datareader.init_soft_cosine('/var/lib/goeievraag/dict.model','/var/lib/goeievraag/tfidf.model')
     print('DONE.')
     
     def get(self, request):
