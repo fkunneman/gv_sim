@@ -21,10 +21,16 @@ class Datareader:
         
         # read questions
         self.qcl = self.db[qcl]
+        self.fast_q = {}
+        for q in self.qcl.find({}):
+            self.fast_q[q['i']] = q['text']
 
         # read answers
         self.acl = self.db[acl]
-
+        self.fast_a = {}
+        for a in self.acl.find({}):
+            self.fast_a[a['i']] = a['text']
+        
         # read question_answers dictionary
         self.qa = self.db[qa]
         self.fast_qa = {}
@@ -38,15 +44,18 @@ class Datareader:
         answers = []
         for index in indices:
             answers.append(self.fast_qa[index][0])
-        answers_db = self.retrieve_by_list(self.acl,'i',answers)
-        answers_sorted = []
-        for a in answers:
-            for adb in answers_db:
-                if adb['i'] == a:
-                    answers_sorted.append(adb['text'])
-                    break
-        return answers_sorted
+        answers_txt = [self.fast_a[i] for i in answers]
+        return answers_txt
         
+        # answers_db = self.retrieve_by_list(self.acl,'i',answers)
+        # answers_sorted = []
+        # for a in answers:
+        #     for adb in answers_db:
+        #         if adb['i'] == a:
+        #             answers_sorted.append(adb['text'])
+        #             break
+        # return answers_sorted
+
     def init_bm25(self, bm25_path):
         # read bm25 model
         with open(bm25_path, 'rb') as fid:
@@ -104,7 +113,8 @@ class Datareader:
         scores = self.bm25.get_scores(query, self.avg_idf)
         scores_numbers = [[j,score] for j,score in enumerate(scores)]
         scores_numbers_ranked = sorted(scores_numbers,key = lambda k : k[1],reverse=True)
-        question_indices, questions = [x[0] for x in scores_numbers_ranked[:n]], [self.qcl.find_one({'i':q[0]})['text'] for q in scores_numbers_ranked[:n]]
+        # question_indices, questions = [x[0] for x in scores_numbers_ranked[:n]], [self.qcl.find_one({'i':q[0]})['text'] for q in scores_numbers_ranked[:n]]
+        question_indices, questions = [x[0] for x in scores_numbers_ranked[:n]], [self.fast_q[q[0]] for q in scores_numbers_ranked[:n]]
 
         return question_indices, questions
 
