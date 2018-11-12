@@ -24,10 +24,10 @@
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
       <a class="navbar-brand" href="{% url 'gvhome' %}">GoeieVraag</a>
 
-      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+      <div class="collapse navbar-collapse justify-content-end" id="navbarsExampleDefault">
         <form class="form-inline my-2 my-lg-0" method="post">
           {% csrf_token %}
-          <input class="form-control mr-sm-2" type="text" name="Question" placeholder="Welke vraag heb je altijd al willen stellen?" aria-label="Search">
+          <input class="form-control mr-sm-2" type="text" name="Question" placeholder="Welke vraag heb je altijd al willen stellen?" style="width:350px" aria-label="Search">
           <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Stel je vraag</button>
         </form>
       </div>
@@ -37,15 +37,20 @@
       <div class="starter-template">
 	{% if retrieved %}
           <h1>Dank voor je vraag! Wellicht heb je alvast iets aan deze eerder gestelde vragen:</h1>
+          <br>
+          <small>Duur van zoekopdracht: {{duur}} seconden</small>
 	  <br><br>
 	  {% for q in retrieved %}
- 	  <p class="lead"><b><u>{{q.question}}</u></b></p>
-          <p class="lead" style="font-size: 12px;">{{q.answer}}</p><hr>
+ 	    <p class="lead"><b><u>{{q.question}}</u></b></p>
+	    {% for p in q.answer %}
+	      <p class="lead" style="font-size: 12px;">{{p}}</p>
+	    {% endfor %}
+	    <hr>
 	  {% endfor %}
 	{% else %}
 	  <h1>Deze vraag is waarschijnlijk niet eerder gesteld...</h1>
 	{% endif %}
-
+      </div>
     </main><!-- /.container -->
 
     <!-- Bootstrap core JavaScript

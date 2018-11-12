@@ -6,6 +6,9 @@ import re
 from pymongo import MongoClient
 
 import numpy
+import string
+punctuation = string.punctuation
+import time
 from gensim.summarization import bm25
 from gensim.models import Word2Vec
 from gensim.corpora import Dictionary
@@ -18,6 +21,11 @@ class Datareader:
 
         client = MongoClient('localhost', dbport)
         self.db = client[dbname]
+        
+        # loading stopwords
+        STOPWORDS_PATH='/roaming/fkunnema/goeievraag/exp_similarity/stopwords.txt'
+        with open(STOPWORDS_PATH) as f:
+            self.stopwords = [word.lower().strip() for word in f.read().split()]
         
         # read questions
         self.qcl = self.db[qcl]
@@ -71,8 +79,11 @@ class Datareader:
     def init_word2vec(self, word2vec_path):
         self.word2vec = Word2Vec.load(word2vec_path)
         
-    def tokenize(self, query):
-        return re.sub(r'([.,;:?!\'\(\)-])', r' \1 ', query.lower()).split()
+    def preprocess(self, query):
+        tokens = re.sub(r'([.,;:?!\'\(\)-])', r' \1 ', query.lower()).split()
+        # remove stopwords and punctuation
+        tokens = [w for w in tokens if w not in self.stopwords and w not in punctuation]
+        return tokens
 
     def encode(self, question):
         emb = []
@@ -89,11 +100,8 @@ class Datareader:
             cos = 0.0
             for i, w1 in enumerate(q1tfidf):
                 for j, w2 in enumerate(q2tfidf):
-                    if w1[0] == w2[0]:
-                        cos += (w1[1] * w2[1])
-                    else:
-                        m_ij = max(0, cosine_similarity([q1emb[i]], [q2emb[j]])[0][0])**2
-                        cos += (w1[1] * m_ij * w2[1])
+                    m_ij = max(0, cosine_similarity([q1emb[i]], [q2emb[j]])[0][0])**2
+                    cos += (w1[1] * m_ij * w2[1])
             return cos
 
         q1emb = self.encode(q1)
@@ -124,24 +132,28 @@ class Datareader:
             output.append([question_indices[i], questions[i], question, self.softcos(query, question)])
 
         questions = sorted(output, key=lambda x: x[3], reverse=True)[:n]
-        questions_filtered = [q for q in questions if q[3] > 0.90]
-        return questions_filtered
+        return questions
     
     def run(self, query):
-
-        # tokenize query
-        query_tok = self.tokenize(query)
+        start = time.time()
+        # preprocess query
+        query_tok = self.preprocess(query)
 
         # retrieve 30 candidates with bm25
         question_indices, questions = self.retrieve(query_tok)
-        # tokenize candidates
-        questions_tok = [self.tokenize(q) for q in questions]
+        # preprocess candidates
+        questions_tok = [self.preprocess(q) for q in questions]
 
         # reranking with softcosine
         questions_ranked = self.rerank(query_tok, question_indices, questions, questions_tok)
 
         # retrieve answers and prepare question objects
         answers_ranked = self.return_questions_answerids([q[0] for q in questions_ranked])
-        question_objects = [{'question':q[1], 'answer':answers_ranked[i]} for i,q in enumerate(questions_ranked)]
+        answers_ranked_splitted = []
+        for answer in answers_ranked:
+            answer_splitted = answer.split('\n')
+            answers_ranked_splitted.append(answer_splitted)
+        question_objects = [{'question':q[1], 'answer':answers_ranked_splitted[i], 'score': q[3]} for i,q in enumerate(questions_ranked)]
+        end = time.time()
         
-        return question_objects
+        return question_objects, round(end-start, 2)
