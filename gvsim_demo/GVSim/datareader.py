@@ -23,7 +23,7 @@ class Datareader:
         self.db = client[dbname]
         
         # loading stopwords
-        STOPWORDS_PATH='/roaming/fkunnema/goeievraag/exp_similarity/stopwords.txt'
+        STOPWORDS_PATH='/var/lib/goeievraag/stopwords.txt'
         with open(STOPWORDS_PATH) as f:
             self.stopwords = [word.lower().strip() for word in f.read().split()]
         
