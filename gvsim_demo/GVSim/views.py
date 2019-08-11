@@ -6,13 +6,6 @@ from . import datareader
 
 import sys
 
-
-
-# Create your views here.
-
-
-
-
 class GVHome(View):
 
     def get(self, request):

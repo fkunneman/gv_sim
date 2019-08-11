@@ -17,14 +17,8 @@ class GVHome(View):
 
     def get(self, request):
 
-        self.questions_path = '/Users/fkunneman/Google Drive/RU/DiscoSumo/Goeievraag/demo_data/questions.txt'
-        self.answers_path = '/Users/fkunneman/Google Drive/RU/DiscoSumo/Goeievraag/demo_data/answers_sample.txt'
-        self.example_questions_path = '/Users/fkunneman/Google Drive/RU/DiscoSumo/Goeievraag/demo_data/examples.txt'
-        self.question_answers_path = '/Users/fkunneman/Google Drive/RU/DiscoSumo/Goeievraag/demo_data/qa_dict.txt'
-        self.bm25_path = '/Users/fkunneman/Google Drive/RU/DiscoSumo/Goeievraag/demo_data/bm25.pkl'
-
         self.datareader = datareader.Datareader(27020,'GoeieVraag','cqa','examples','answers','qa_dict')
-        
+
         return render(
             request,
             'index.html', {
@@ -37,18 +31,16 @@ class GVHome(View):
 
     def post(self, request):
 
-        self.questions_path = '/Users/fkunneman/Google Drive/RU/DiscoSumo/Goeievraag/demo_data/questions.txt'
-        self.answers_path = '/Users/fkunneman/Google Drive/RU/DiscoSumo/Goeievraag/demo_data/answers_sample.txt'
-        self.example_questions_path = '/Users/fkunneman/Google Drive/RU/DiscoSumo/Goeievraag/demo_data/examples.txt'
-        self.question_answers_path = '/Users/fkunneman/Google Drive/RU/DiscoSumo/Goeievraag/demo_data/qa_dict.txt'
-        self.bm25_path = '/Users/fkunneman/Google Drive/RU/DiscoSumo/Goeievraag/demo_data/bm25.pkl'
+        self.datareader = datareader.Datareader(27020,'GoeieVraag','cqa','examples','answers','qa_dict')
 
-        self.datareader = datareader.Datareader(self.questions_path, self.example_questions_path, self.answers_path, self.question_answers_path, self.bm25_path)
+        self.bm25_path = '/Users/fkunneman/Google Drive/RU/DiscoSumo/Goeievraag/demo_data/bm25.pkl'
+        
         if 'Question' in request.POST:
             query = request.POST['Question']
-        print('Query',query.encode('utf-8'))
-        self.retrieved = self.datareader.rank_sims_bm25(query, 0.2)
-        
+            self.retrieved = self.datareader.rank_sims_bm25(self.bm25_path, self.query, 0.2)
+        else:
+            self.retrieved = []
+
         return render(
             request,
             'index.html', {
@@ -58,38 +50,3 @@ class GVHome(View):
                 'placeholder': query
             }
         )
-
-    
-class GVReturn(View):
-
-    def get(self, request):
-
-        return render(
-            request,
-            'gv_sim/search.html', {
-                'query':'',
-                'returned_questions':[],
-                'returned_answers':[]
-            }
-        )
-
-
-    def post(self, request):
-
-        self.datareader = datareader.Datareader()
-        self.returned_questions, self.returned_answers = datareader.rank_sims_bm25(request.POST['query'],similarity_threshold = 0.5) # similarity threshold value is used to classify question as similar / non-similar
-        # self.returned_questions, self.returned_answers = datareader.rank_sims_soft_cosine(request.POST['query'],similarity_threshold = 0.5) # similarity threshold value is used to classify question as similar / non-similar
-
-        return render(
-            request,
-            'gv_sim/search.html', {
-                'query':request.POST['query'],
-                'returned_questions':self.returned_questions,
-                'returned_answers':self.returned_answers
-            }
-        )
-    
-
-        
-
-        
