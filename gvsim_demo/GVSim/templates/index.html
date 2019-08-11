@@ -64,10 +64,11 @@
 <div class="center">
 
 <font color="light grey">
-<form method="post">
-{% csrf_token %}
-<input type="text" style="font-size: 14pt; text-align:center; font-color:grey; height : 32px;" name="Question" size="50" value="{{placeholder}}" onclick="this.value=''"><input style="font-size: 20pt" type="submit" value="Stel je vraag">
-</form>
+  <form method="post">
+    <img class="mb-4" src="img/discosumo.jpg" alt="" width="30%" height="30%">
+      {% csrf_token %}
+      <input type="text" style="font-size: 14pt; text-align:center; font-color:grey; height : 32px;" name="Question" size="50" value="{{placeholder}}" onclick="this.value=''"><input style="font-size: 20pt" type="submit" value="Stel je vraag">
+  </form>
 </font>
 
 <br>
